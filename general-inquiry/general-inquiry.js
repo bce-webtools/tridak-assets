@@ -1,3 +1,4 @@
+console.log("general-inquiry.js loaded")
 // ------------------------------
 // ActiveCampaign Inline Form Logic
 // ------------------------------
