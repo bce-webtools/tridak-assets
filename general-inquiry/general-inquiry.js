@@ -1,4 +1,5 @@
-console.log("general-inquiry.js loaded")
+document.addEventListener('DOMContentLoaded', function () {
+  console.log("✅ general-inquiry.js loaded and DOM ready");
 // ------------------------------
 // ActiveCampaign Inline Form Logic
 // ------------------------------
@@ -650,5 +651,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (countrySelect && stateSelect) {
     countrySelect.addEventListener('change', updateStateOptions);
     updateStateOptions(); // trigger once on page load
+
   }
+});
 });
