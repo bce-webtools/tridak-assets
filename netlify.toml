@@ -1,0 +1,5 @@
+[[headers]]
+  for = "/general-inquiry/general-inquiry.js"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Content-Type = "application/javascript"
