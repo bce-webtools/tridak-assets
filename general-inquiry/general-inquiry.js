@@ -1,4 +1,6 @@
-<script>
+// ------------------------------
+// ActiveCampaign Inline Form Logic
+// ------------------------------
 window.cfields = {"4":"country","5":"state","7":"cookie_consent","6":"optin_to_newsletter"};
 window._show_thank_you = function(id, message, trackcmp_url, email) {
     var form = document.getElementById('_form_' + id + '_'), thank_you = form.querySelector('._form-thank-you');
@@ -535,119 +537,117 @@ window._load_script = function(url, callback, isSubmit) {
     addEvent(form_to_submit, 'submit', form_submit);
 })();
 
-</script>
+// ------------------------------
+// Country/State/Postal Code/Address Logic
+// ------------------------------
+document.addEventListener('DOMContentLoaded', function () {
+  const countrySelect = document.getElementById('field[4]');
+  const stateSelect = document.getElementById('field[5]');
+  const postalCodeInput = document.getElementById('ca[6][v]');
+  const addressInput = document.getElementById('ca[2][v]');
 
+  // Optional: Insert warning message dynamically
+  let countryWarning = document.getElementById('country-warning');
+  if (!countryWarning) {
+    countryWarning = document.createElement('div');
+    countryWarning.id = 'country-warning';
+    countryWarning.textContent = 'Note: We currently only serve customers in the United States and Canada.';
+    countryWarning.style.color = '#900';
+    countryWarning.style.fontSize = '13px';
+    countryWarning.style.margin = '4px 0 10px 0';
+    const stateWrapper = stateSelect.closest('div._field-wrapper');
+    if (stateWrapper) {
+      stateWrapper.parentElement.insertBefore(countryWarning, stateWrapper.nextSibling);
+    }
+  }
 
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const countrySelect = document.getElementById('field[4]');
-    const stateSelect = document.getElementById('field[5]');
-    const postalCodeInput = document.getElementById('ca[6][v]');
-    const addressInput = document.getElementById('ca[2][v]');
+  const usStates = [
+    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
+    "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
+    "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan",
+    "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire",
+    "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio",
+    "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
+    "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
+    "Wisconsin", "Wyoming"
+  ];
 
-    // Optional: Insert warning message dynamically if not already present
-    let countryWarning = document.getElementById('country-warning');
-    if (!countryWarning) {
-      countryWarning = document.createElement('div');
-      countryWarning.id = 'country-warning';
-      countryWarning.textContent = 'Note: We currently only serve customers in the United States and Canada.';
-      countryWarning.style.color = '#900';
-      countryWarning.style.fontSize = '13px';
-      countryWarning.style.margin = '4px 0 10px 0';
-      const stateWrapper = stateSelect.closest('div._field-wrapper');
-      if (stateWrapper) {
-        stateWrapper.parentElement.insertBefore(countryWarning, stateWrapper.nextSibling);
-      }
+  const canadianProvinces = [
+    "Alberta", "British Columbia", "Labrador", "Manitoba", "New Brunswick", "Newfoundland",
+    "Northwest Territories", "Nova Scotia", "Nunavut", "Ontario", "Prince Edward Isle",
+    "Quebec", "Saskatchewan", "Yukon Territory"
+  ];
+
+  function populateOptions(options, includeEmpty = true) {
+    stateSelect.innerHTML = '';
+
+    if (includeEmpty) {
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = '';
+      placeholder.disabled = true;
+      placeholder.selected = true;
+      stateSelect.appendChild(placeholder);
     }
 
-    const usStates = [
-      "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
-      "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
-      "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan",
-      "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire",
-      "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio",
-      "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
-      "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
-      "Wisconsin", "Wyoming"
-    ];
+    options.forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item;
+      opt.textContent = item;
+      stateSelect.appendChild(opt);
+    });
 
-    const canadianProvinces = [
-      "Alberta", "British Columbia", "Labrador", "Manitoba", "New Brunswick", "Newfoundland",
-      "Northwest Territories", "Nova Scotia", "Nunavut", "Ontario", "Prince Edward Isle",
-      "Quebec", "Saskatchewan", "Yukon Territory"
-    ];
+    stateSelect.value = '';
+  }
 
-    function populateOptions(options, includeEmpty = true) {
+  function updateStateOptions() {
+    const selectedCountry = countrySelect.value;
+
+    if (selectedCountry === "United States") {
+      populateOptions(usStates);
+      stateSelect.disabled = false;
+      postalCodeInput.disabled = false;
+      addressInput.disabled = false;
+      postalCodeInput.value = '';
+      addressInput.value = '';
+      countryWarning.style.display = 'none';
+    } else if (selectedCountry === "Canada") {
+      populateOptions(canadianProvinces);
+      stateSelect.disabled = false;
+      postalCodeInput.disabled = false;
+      addressInput.disabled = false;
+      postalCodeInput.value = '';
+      addressInput.value = '';
+      countryWarning.style.display = 'none';
+    } else if (selectedCountry === "Other") {
+      populateOptions(["Not Applicable"], false);
+      stateSelect.disabled = false;
+      stateSelect.value = "Not Applicable";
+
+      postalCodeInput.disabled = true;
+      addressInput.disabled = true;
+      postalCodeInput.value = '';
+      addressInput.value = '';
+
+      countryWarning.style.display = 'block';
+    } else {
       stateSelect.innerHTML = '';
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = '';
+      opt.disabled = true;
+      opt.selected = true;
+      stateSelect.appendChild(opt);
 
-      if (includeEmpty) {
-        const placeholder = document.createElement('option');
-        placeholder.value = '';
-        placeholder.textContent = '';
-        placeholder.disabled = true;
-        placeholder.selected = true;
-        stateSelect.appendChild(placeholder);
-      }
+      postalCodeInput.disabled = false;
+      addressInput.disabled = false;
 
-      options.forEach(item => {
-        const opt = document.createElement('option');
-        opt.value = item;
-        opt.textContent = item;
-        stateSelect.appendChild(opt);
-      });
-
-      stateSelect.value = '';
+      countryWarning.style.display = 'none';
     }
+  }
 
-    function updateStateOptions() {
-      const selectedCountry = countrySelect.value;
-
-      if (selectedCountry === "United States") {
-        populateOptions(usStates);
-        stateSelect.disabled = false;
-        postalCodeInput.disabled = false;
-        addressInput.disabled = false;
-        postalCodeInput.value = '';
-        addressInput.value = '';
-        countryWarning.style.display = 'none';
-      } else if (selectedCountry === "Canada") {
-        populateOptions(canadianProvinces);
-        stateSelect.disabled = false;
-        postalCodeInput.disabled = false;
-        addressInput.disabled = false;
-        postalCodeInput.value = '';
-        addressInput.value = '';
-        countryWarning.style.display = 'none';
-      } else if (selectedCountry === "Other") {
-        populateOptions(["Not Applicable"], false);
-        stateSelect.disabled = false;
-        stateSelect.value = "Not Applicable";
-
-        postalCodeInput.disabled = true;
-        addressInput.disabled = true;
-        postalCodeInput.value = '';
-        addressInput.value = '';
-
-        countryWarning.style.display = 'block';
-      } else {
-        stateSelect.innerHTML = '';
-        const opt = document.createElement('option');
-        opt.value = '';
-        opt.textContent = '';
-        opt.disabled = true;
-        opt.selected = true;
-        stateSelect.appendChild(opt);
-
-        postalCodeInput.disabled = false;
-        addressInput.disabled = false;
-
-        countryWarning.style.display = 'none';
-      }
-    }
-
-    if (countrySelect && stateSelect) {
-      countrySelect.addEventListener('change', updateStateOptions);
-      updateStateOptions(); // trigger once on page load
-    }
-  });
-</script>
+  if (countrySelect && stateSelect) {
+    countrySelect.addEventListener('change', updateStateOptions);
+    updateStateOptions(); // trigger once on page load
+  }
+});
