@@ -154,6 +154,10 @@ window._load_script = function(url, callback, isSubmit) {
     }
     var _removed = false;
         var form_to_submit = document.getElementById('_form_2_');
+  if (!form_to_submit) {
+    console.error("Could not find #_form_2_ on the page.");
+    return;
+  }
     var allInputs = form_to_submit.querySelectorAll('input, select, textarea'), tooltips = [], submitted = false;
 
     var getUrlParam = function(name) {
