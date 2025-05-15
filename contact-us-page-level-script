@@ -1,0 +1,50 @@
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const dropdown = document.getElementById('form-type');
+    const nextBtn = document.getElementById('next-button');
+    const formSelector = document.getElementById('form-selector');
+    const backBtn = document.getElementById('back-button');
+
+    const formMap = {
+      'General Inquiry': 'form-general',
+      'Request for Quote': 'form-quote',
+      'Technical Support': 'form-support'
+    };
+
+    function hideAllForms() {
+      Object.values(formMap).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+    }
+
+    nextBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      const selectedValue = dropdown.value;
+      console.log('Selected value:', selectedValue);
+
+      const formId = formMap[selectedValue];
+      console.log('Form ID to show:', formId);
+
+      if (!formId) {
+        console.warn('No form matched for selection:', selectedValue);
+        return;
+      }
+
+      hideAllForms();
+
+      const selectedForm = document.getElementById(formId);
+      if (selectedForm) selectedForm.style.display = 'block';
+
+      formSelector.style.display = 'none';
+      backBtn.style.display = 'inline-block';
+    });
+
+    backBtn.addEventListener('click', function () {
+      hideAllForms();
+      formSelector.style.display = 'block';
+      backBtn.style.display = 'none';
+    });
+  });
+</script>
